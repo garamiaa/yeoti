@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>모션차트 × 여신티켓 예약 연동 | 광고비 최대 360만 원 무료 지원</title>
+<meta name="description" content="여신티켓 x 모션차트 연동 기념 최대 360만 원 광고비를 지원드려요.">
+<meta name="theme-color" content="#8668FD">
+<meta property="og:type" content="website">
+<meta property="og:title" content="모션차트 × 여신티켓 예약 연동">
+<meta property="og:description" content="지금 모션차트에서 여신티켓 연동하면? 최대 360만 원 광고비, 무료로 지원해 드려요!">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* =========================================================
+   TOKENS
+   radius 값은 --radius 하나로 전체 제어
+   ========================================================= */
+:root{
+  --radius:1px;
+
+  /* MOTION brand */
+  --violet:#8668FD;
+  --violet-deep:#6A4DF0;
+  --blue:#408FF5;
+  --blue-deep:#2F76D8;
+  --indigo:#4C6DDA;
+  --lav:#B1BEFC;
+  --mist:#EEF3FB;
+  --paper:#F6F8FD;
+  --grad:linear-gradient(102deg,#8668FD 0%,#408FF5 100%);
+  --grad-v:linear-gradient(180deg,#8668FD 0%,#408FF5 100%);
+
+  /* neutral */
+  --white:#FFFFFF;
+  --ink:#131419;
+  --text:#313334;
+  --muted:#5F636B;
+  --faint:#9A9EA7;
+  --line:#E3E6EF;
+  --line-2:#D3D9E8;
+  --night:#0E0F15;
+  --night-2:#161823;
+  --night-line:rgba(255,255,255,.1);
+  --night-text:#B9BDC8;
+
+  --gl:rgba(76,109,218,.07);
+  --shadow:0 1px 0 rgba(19,20,25,.04),0 40px 80px -40px rgba(76,109,218,.45);
+
+  --font:"Pretendard Variable",Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --font-en:Montserrat,"Pretendard Variable",Pretendard,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --gutter:clamp(20px,4vw,40px);
+  --maxw:1240px;
+  --header-h:64px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+*,*::before,*::after{box-sizing:border-box;border-radius:var(--radius)}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + 12px);-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--white);color:var(--text);
+  font-family:var(--font);font-size:17px;line-height:1.7;letter-spacing:-.01em;
+  word-break:keep-all;overflow-wrap:break-word;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4,p,ol,ul,figure,blockquote{margin:0}
+ol,ul{padding:0;list-style:none}
+a{color:inherit}
+b,strong{font-weight:700}
+::selection{background:rgba(134,104,253,.22)}
+:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter);position:relative}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.en{font-family:var(--font-en)}
+.mono{font-family:var(--font-mono)}
+
+/* 공통 채널 태그 / 상태 */
+.ch{display:inline-flex;align-items:center;height:22px;padding:0 8px;font-size:11.5px;font-weight:700;font-style:normal;letter-spacing:0;white-space:nowrap;border:1px solid}
+.ch-ys{color:var(--violet-deep);background:rgba(134,104,253,.1);border-color:rgba(134,104,253,.35)}
+.ch-mc{color:var(--blue-deep);background:rgba(64,143,245,.09);border-color:rgba(64,143,245,.35)}
+.st{display:inline-flex;align-items:center;justify-content:center;height:24px;min-width:48px;padding:0 9px;font-size:12px;font-weight:700;white-space:nowrap;border:1px solid transparent}
+.st-ok{background:var(--indigo);color:#fff}
+.st-wait{color:var(--violet-deep);border-color:var(--violet);background:#fff}
+.st-move{color:var(--blue-deep);border-color:var(--blue);background:#fff}
+.st-cancel{color:var(--faint);border-color:var(--line-2);background:var(--paper);text-decoration:line-through}
+
+/* 버튼 */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  height:54px;padding:0 24px;border:1px solid transparent;
+  font:700 16px/1 var(--font);letter-spacing:-.01em;text-decoration:none;white-space:nowrap;cursor:pointer;
+  transition:transform .35s var(--ease),background-position .6s var(--ease),background-color .3s,border-color .3s,color .3s,box-shadow .35s var(--ease);
+}
+.btn .arr{display:inline-block;font-family:var(--font-en);transition:transform .35s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+.btn:active{transform:translateY(1px)}
+.btn-grad{color:#fff;background:linear-gradient(102deg,#8668FD 0%,#408FF5 50%,#8668FD 100%);background-size:200% 100%;background-position:0 0;box-shadow:0 14px 30px -14px rgba(106,77,240,.7)}
+.btn-grad:hover{background-position:100% 0;box-shadow:0 18px 36px -14px rgba(64,143,245,.75)}
+.btn-ink{color:#fff;background:var(--ink)}
+.btn-ink:hover{background:#262833}
+.btn-line{color:var(--ink);background:var(--white);border-color:var(--line-2)}
+.btn-line:hover{border-color:var(--ink)}
+.btn-line-light{color:#fff;background:transparent;border-color:rgba(255,255,255,.28)}
+.btn-line-light:hover{border-color:#fff;background:rgba(255,255,255,.05)}
+.btn-sm{height:40px;padding:0 16px;font-size:14px;gap:8px}
+
+/* 섹션 공통 */
+.sec{position:relative;padding-block:clamp(88px,11vw,168px);border-top:1px solid var(--line)}
+.label{
+  display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;
+  font:500 12.5px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);
+}
+.label::before{content:"";width:8px;height:8px;background:var(--grad)}
+.label span{color:var(--faint)}
+.h2{
+  font-size:clamp(1.85rem,1.1rem + 2.6vw,3.35rem);line-height:1.22;font-weight:780;letter-spacing:-.04em;color:var(--ink);
+  text-wrap:balance;
+}
+.lead{font-size:clamp(1.02rem,.95rem + .3vw,1.18rem);color:var(--muted);line-height:1.75;text-wrap:pretty}
+.sec-head{display:grid;gap:0;margin-bottom:clamp(40px,6vw,72px);max-width:880px}
+
+/* 1320px 이상에서 보이는 그리드 레일 + 교차점 마커 */
+@media (min-width:1320px){
+  .sec{
+    background-image:linear-gradient(var(--rail,var(--line)),var(--rail,var(--line))),linear-gradient(var(--rail,var(--line)),var(--rail,var(--line)));
+    background-size:1px 100%;background-repeat:no-repeat;
+    background-position:calc(50% - var(--maxw) / 2) 0,calc(50% + var(--maxw) / 2) 0;
+  }
+  .sec>.wrap::before,.sec>.wrap::after{
+    content:"";position:absolute;top:calc(-1 * clamp(88px,11vw,168px) - 7px);width:13px;height:13px;
+    background:linear-gradient(var(--ink),var(--ink)) center/1px 100% no-repeat,linear-gradient(var(--ink),var(--ink)) center/100% 1px no-repeat;
+  }
+  .sec>.wrap::before{left:-7px}
+  .sec>.wrap::after{right:-7px}
+}
+
+/* 스크롤 리빌 */
+.js .rv{opacity:0;transform:translateY(26px);transition:opacity 1s var(--ease) var(--d,0s),transform 1s var(--ease) var(--d,0s)}
+.js .rv.in{opacity:1;transform:none}
+
+/* =========================================================
+   PROGRESS + HEADER
+   ========================================================= */
+.progress{position:fixed;inset:0 0 auto 0;height:2px;z-index:60;pointer-events:none}
+.progress span{display:block;height:100%;background:var(--grad);transform-origin:0 50%;transform:scaleX(0)}
+
+.gnb{
+  position:sticky;top:0;z-index:50;height:var(--header-h);
+  background:rgba(255,255,255,.72);
+  -webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px);
+  border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s;
+}
+.gnb.is-scrolled{border-bottom-color:var(--line);background:rgba(255,255,255,.86)}
+.gnb-in{max-width:var(--maxw);height:100%;margin-inline:auto;padding-inline:var(--gutter);display:flex;align-items:center;gap:24px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);margin-right:auto}
+/* MOTION E 심볼: 원본 로고 색(motionecosystem.com th_logo.png 샘플링)으로 꽃잎 면 재현 */
+.hex{
+  width:28px;height:32px;display:grid;place-items:center;flex:none;
+  color:#fff;font:800 13px/1 var(--font-en);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  background:
+    radial-gradient(ellipse 14% 12% at 58% 40%, #0d45b2 0 98%, transparent 100%),
+    radial-gradient(ellipse 30% 22% at 80% 31%, #46b4f4 0 98%, transparent 100%),
+    radial-gradient(ellipse 28% 21% at 19% 67%, #9677f7 0 98%, transparent 100%),
+    radial-gradient(ellipse 32% 24% at 24% 31%, #1452bb 0 98%, transparent 100%),
+    radial-gradient(ellipse 18% 24% at 50% 10%, #2a95c8 0 98%, transparent 100%),
+    radial-gradient(ellipse 28% 22% at 80% 66%, #1f7cef 0 98%, transparent 100%),
+    radial-gradient(ellipse 20% 22% at 50% 88%, #2272dd 0 98%, transparent 100%),
+    #1b64d4;
+}
+.foot .brand-text{display:grid;gap:5px}
+.brand-tag{font:600 9.5px/1 var(--font-en);letter-spacing:.14em;color:#8C90A0}
+.brand-word{font:700 19px/1 var(--font-en);letter-spacing:.01em;color:#111}
+.foot .brand-word{color:#fff}
+.brand-sub{display:inline-flex;align-items:center;gap:8px;padding-left:12px;margin-left:4px;border-left:1px solid var(--line-2);font-size:13.5px;font-weight:600;color:var(--muted);line-height:1}
+.brand-sub i{font-style:normal;font-family:var(--font-en);color:var(--faint)}
+.gnb-nav{display:flex;gap:4px}
+.gnb-nav a{padding:8px 14px;font-size:15px;font-weight:600;color:var(--muted);text-decoration:none;transition:color .2s,background-color .2s}
+.gnb-nav a:hover{color:var(--ink);background:var(--paper)}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero{position:relative;overflow:hidden;padding-block:clamp(56px,8vw,112px) clamp(72px,9vw,128px);isolation:isolate}
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background-image:linear-gradient(to right,var(--gl) 1px,transparent 1px),linear-gradient(to bottom,var(--gl) 1px,transparent 1px);
+  background-size:64px 64px;background-position:center top;
+  -webkit-mask-image:radial-gradient(ellipse 75% 70% at 70% 35%,#000 20%,transparent 75%);
+          mask-image:radial-gradient(ellipse 75% 70% at 70% 35%,#000 20%,transparent 75%);
+}
+.aurora{position:absolute;z-index:-2;pointer-events:none;filter:blur(20px);opacity:.9}
+.aurora-a{width:760px;height:760px;right:-180px;top:-260px;background:radial-gradient(closest-side,rgba(134,104,253,.34),transparent);animation:drift 22s var(--ease) infinite alternate}
+.aurora-b{width:640px;height:640px;right:18%;top:22%;background:radial-gradient(closest-side,rgba(64,143,245,.26),transparent);animation:drift 26s var(--ease) infinite alternate-reverse}
+@keyframes drift{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(-60px,50px,0) scale(1.08)}}
+
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(40px,5vw,80px);align-items:center}
+
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 14px 0 6px;margin-bottom:28px;
+  background:rgba(255,255,255,.8);border:1px solid var(--line-2);
+  font-size:13.5px;font-weight:600;color:var(--ink);
+}
+.eyebrow b{display:inline-flex;align-items:center;height:22px;padding:0 8px;background:var(--grad);color:#fff;font:700 11px/1 var(--font-en);letter-spacing:.08em}
+
+.h1{display:grid;gap:18px;color:var(--ink)}
+.h1-q{font-size:clamp(1.15rem,.95rem + .9vw,1.65rem);font-weight:650;letter-spacing:-.03em;color:var(--muted)}
+.h1-main{font-size:clamp(2.55rem,1.25rem + 5vw,5.1rem);line-height:1.1;font-weight:820;letter-spacing:-.052em;text-wrap:balance}
+.h1-main .num{font-family:var(--font-en);font-weight:800;letter-spacing:-.04em}
+.hero .lead{margin-top:26px;max-width:540px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:36px}
+.hero-points{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:30px;padding-top:24px;border-top:1px solid var(--line);font-size:14.5px;font-weight:600;color:var(--ink)}
+.hero-points li{display:inline-flex;align-items:center;gap:8px}
+.hero-points li::before{content:"";width:14px;height:8px;margin-top:-3px;border-left:2px solid var(--violet);border-bottom:2px solid var(--violet);transform:rotate(-45deg)}
+
+/* ---- 텍스트로 구성한 모션차트 화면 목업 ---- */
+.stage{position:relative;padding:72px 0 36px}
+.mock{position:relative;background:var(--white);border:1px solid var(--line-2);box-shadow:var(--shadow);overflow:hidden}
+.mock-bar{display:flex;align-items:center;gap:12px;height:42px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--paper)}
+.mock-dots{display:flex;gap:6px}
+.mock-dots i{width:9px;height:9px;background:var(--line-2)}
+.mock-title{font-size:12.5px;font-weight:700;color:var(--ink)}
+.mock-live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font:600 10.5px/1 var(--font-mono);letter-spacing:.1em;color:var(--indigo)}
+.mock-live em{width:7px;height:7px;background:var(--violet);animation:blink 1.6s steps(2,start) infinite}
+@keyframes blink{50%{opacity:.25}}
+
+.mock-main{display:grid;grid-template-columns:88px minmax(0,1fr)}
+.mock-rail{border-right:1px solid var(--line);padding:14px 10px;display:grid;align-content:start;gap:4px;background:#FBFCFE}
+.mock-rail span{display:block;padding:8px 8px;font-size:12px;font-weight:600;color:var(--faint)}
+.mock-rail span.on{color:var(--ink);background:var(--white);border:1px solid var(--line);box-shadow:inset 2px 0 0 var(--violet)}
+.mock-body{padding:16px 16px 12px}
+.mock-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.mock-date{font:600 10.5px/1 var(--font-mono);letter-spacing:.12em;color:var(--faint);text-transform:uppercase}
+.mock-h{margin-top:6px;font-size:16px;font-weight:750;color:var(--ink);letter-spacing:-.03em}
+.mock-tabs{display:flex;border:1px solid var(--line)}
+.mock-tabs span{padding:6px 10px;font-size:11.5px;font-weight:650;color:var(--faint);border-left:1px solid var(--line)}
+.mock-tabs span:first-child{border-left:0}
+.mock-tabs span.on{color:var(--ink);background:var(--mist)}
+
+.mock-list{display:grid;gap:6px}
+.row{display:grid;grid-template-columns:62px minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);background:var(--white);font-size:13px}
+.row time{font:600 12.5px/1.3 var(--font-en);color:var(--ink);display:grid}
+.row time s{color:var(--faint);font-weight:500;font-size:11px}
+.row .who{min-width:0;display:grid;line-height:1.35}
+.row .who b{font-size:13.5px;color:var(--ink)}
+.row .who small{font-size:11.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.is-new{animation:rowFlash 8s var(--ease) infinite}
+@keyframes rowFlash{
+  0%,8%{background:var(--white);border-color:var(--line)}
+  14%,52%{background:rgba(134,104,253,.07);border-color:rgba(134,104,253,.45)}
+  64%,100%{background:var(--white);border-color:var(--line)}
+}
+.st-swap{display:grid}
+.st-swap>span{grid-area:1/1}
+.st-swap .st-wait{opacity:0;animation:swapA 8s steps(1,end) infinite}
+.st-swap .st-ok{opacity:1;animation:swapB 8s steps(1,end) infinite}
+@keyframes swapA{0%{opacity:1}56%{opacity:0}100%{opacity:0}}
+@keyframes swapB{0%{opacity:0}56%{opacity:1}100%{opacity:1}}
+
+/* 신규 예약 알림 토스트 */
+.toast{
+  position:absolute;right:-18px;top:0;z-index:2;width:258px;padding:14px 14px 12px;
+  background:var(--ink);color:#fff;border:1px solid #2A2D3A;box-shadow:0 30px 60px -24px rgba(14,15,21,.6);
+  animation:toast 8s var(--ease) infinite;
+}
+.toast::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grad-v)}
+.toast-k{display:flex;align-items:center;gap:8px;font:600 10.5px/1 var(--font-mono);letter-spacing:.1em;color:#C9BFFF;text-transform:uppercase}
+.toast-k i{width:6px;height:6px;background:var(--violet)}
+.toast-t{margin-top:8px;font-size:14px;font-weight:700;letter-spacing:-.02em}
+.toast-d{font-size:12.5px;color:var(--night-text)}
+.toast-a{display:flex;gap:6px;margin-top:10px}
+.toast-a span{flex:1;display:grid;place-items:center;height:28px;font-size:11.5px;font-weight:700;border:1px solid rgba(255,255,255,.18);color:#E6E8EE}
+.toast-a span.ok{background:var(--grad);border-color:transparent;color:#fff;animation:press 8s var(--ease) infinite}
+@keyframes toast{
+  0%,6%{opacity:0;transform:translate3d(0,-12px,0)}
+  12%,52%{opacity:1;transform:none}
+  60%,100%{opacity:0;transform:translate3d(0,-8px,0)}
+}
+@keyframes press{0%,46%{transform:none;filter:none}49%{transform:scale(.94);filter:brightness(1.15)}53%,100%{transform:none;filter:none}}
+
+.flow-chip{
+  position:absolute;left:-16px;bottom:4px;z-index:2;display:flex;align-items:center;gap:8px;padding:10px 14px;
+  background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid var(--line-2);box-shadow:0 20px 40px -24px rgba(76,109,218,.5);
+  font-size:12.5px;font-weight:700;color:var(--ink);
+}
+.flow-chip i{font-style:normal;font-family:var(--font-en);color:var(--violet)}
+
+/* =========================================================
+   TICKER
+   ========================================================= */
+.ticker{overflow:hidden;border-top:1px solid var(--line);background:var(--white);position:relative}
+.ticker::before,.ticker::after{content:"";position:absolute;top:0;bottom:0;width:80px;z-index:1;pointer-events:none}
+.ticker::before{left:0;background:linear-gradient(90deg,#fff,rgba(255,255,255,0))}
+.ticker::after{right:0;background:linear-gradient(270deg,#fff,rgba(255,255,255,0))}
+.ticker-track{display:flex;width:max-content;animation:marquee 46s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker-list{display:flex}
+.ticker-list li{display:flex;align-items:center;gap:26px;padding:20px 26px 20px 0;font-size:15.5px;font-weight:650;color:var(--ink);white-space:nowrap;letter-spacing:-.02em}
+.ticker-list li::before{content:"";width:9px;height:10px;background:var(--grad-v);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+@keyframes marquee{to{transform:translate3d(-50%,0,0)}}
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+.intro-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
+.hello{font-size:clamp(2.2rem,1.3rem + 3.4vw,4.2rem);line-height:1.1;font-weight:820;letter-spacing:-.05em;color:var(--ink)}
+.hello-sub{margin-top:18px;font-size:clamp(1.1rem,1rem + .5vw,1.4rem);font-weight:700;letter-spacing:-.03em;color:var(--ink)}
+.hello-sub em{font-style:normal}
+.intro-copy{display:grid;gap:18px;margin-top:32px;color:var(--muted);font-size:clamp(1rem,.96rem + .2vw,1.1rem);line-height:1.85;max-width:560px;text-wrap:pretty}
+.intro-copy strong{color:var(--ink)}
+
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.stat{position:relative;display:grid;align-content:space-between;gap:28px;min-height:210px;padding:24px 24px 26px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--white);overflow:hidden;transition:background-color .4s}
+.stat:hover{background:var(--paper)}
+.stat-k{font:500 11.5px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.stat-v{display:flex;align-items:baseline;gap:4px;color:var(--ink);line-height:1}
+.stat-v b{font:800 clamp(2.6rem,1.8rem + 2.4vw,3.9rem)/1 var(--font-en);letter-spacing:-.05em}
+.stat-v span{font-size:clamp(1.1rem,1rem + .5vw,1.45rem);font-weight:750}
+.stat-v small{font-size:14px;font-weight:700;margin-right:4px;align-self:center}
+.stat-v .ko{font:820 clamp(2.3rem,1.6rem + 2.2vw,3.5rem)/1 var(--font);letter-spacing:-.05em}
+.stat-d{font-size:14.5px;font-weight:600;color:var(--muted);line-height:1.5}
+.stat-grad{background:var(--grad);color:#fff}
+.stat-grad:hover{background:var(--grad)}
+.stat-grad .stat-k{color:rgba(255,255,255,.75)}
+.stat-grad .stat-v,.stat-grad .stat-d{color:#fff}
+.stat-grad::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(to right,rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:24px 24px;-webkit-mask-image:linear-gradient(200deg,#000,transparent 70%);mask-image:linear-gradient(200deg,#000,transparent 70%);
+}
+
+/* =========================================================
+   BENEFITS
+   ========================================================= */
+.benefits{background-color:var(--paper)}
+.benefits::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(to right,var(--gl) 1px,transparent 1px),linear-gradient(to bottom,var(--gl) 1px,transparent 1px);
+  background-size:64px 64px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 55%);mask-image:linear-gradient(180deg,#000,transparent 55%);
+}
+.bn-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px}
+.bn{position:relative;overflow:hidden;display:grid;align-content:space-between;gap:48px;min-height:400px;padding:clamp(26px,3.4vw,44px);border:1px solid var(--line);background:var(--white);isolation:isolate}
+.bn-k{display:flex;align-items:center;justify-content:space-between;font:500 12px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.bn-t{font-size:clamp(1.25rem,1.1rem + .6vw,1.6rem);font-weight:750;letter-spacing:-.03em;color:var(--ink)}
+.bn-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px;margin-top:10px;line-height:1;color:var(--ink)}
+.bn-big small{font-size:clamp(1.1rem,1rem + .6vw,1.5rem);font-weight:750}
+.bn-big b{font:800 clamp(4.2rem,2.4rem + 6vw,7.6rem)/.9 var(--font-en);letter-spacing:-.06em}
+.bn-big span{font-size:clamp(1.6rem,1.2rem + 1.6vw,2.6rem);font-weight:800;letter-spacing:-.04em}
+.bn-big .ko{font:820 clamp(2.8rem,1.8rem + 3.6vw,4.8rem)/1 var(--font);letter-spacing:-.055em}
+.bn-tag{display:inline-flex;align-items:center;height:36px;padding:0 16px;margin-top:24px;font-size:15px;font-weight:750}
+
+.bn-1{background:var(--night);border-color:var(--night);color:#fff}
+.bn-1 .bn-t,.bn-1 .bn-big{color:#fff}
+.bn-1 .bn-k{color:#8C90A0}
+.bn-1 .bn-tag{background:var(--grad);color:#fff}
+.bn-1 .bn-big b{background:linear-gradient(100deg,#B7A6FF 0%,#FFFFFF 45%,#8FC2FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bn-1::before{content:"";position:absolute;z-index:-1;width:620px;height:620px;right:-220px;top:-260px;background:radial-gradient(closest-side,rgba(134,104,253,.55),transparent);filter:blur(10px)}
+.bn-1::after{content:"";position:absolute;z-index:-1;width:520px;height:520px;left:-200px;bottom:-300px;background:radial-gradient(closest-side,rgba(64,143,245,.4),transparent);filter:blur(10px)}
+
+.bn-2 .bn-tag{border:1px solid var(--violet);color:var(--violet-deep)}
+.player{border:1px solid var(--line-2);background:var(--night);overflow:hidden}
+.player-scr{position:relative;aspect-ratio:16/7;display:grid;place-items:center;
+  background:
+   linear-gradient(to right,rgba(255,255,255,.06) 1px,transparent 1px) 0 0/28px 28px,
+   linear-gradient(to bottom,rgba(255,255,255,.06) 1px,transparent 1px) 0 0/28px 28px,
+   radial-gradient(ellipse at 30% 20%,rgba(134,104,253,.55),transparent 60%),
+   radial-gradient(ellipse at 80% 90%,rgba(64,143,245,.5),transparent 60%),
+   var(--night-2);
+}
+.play{width:56px;height:56px;display:grid;place-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;font-size:18px;padding-left:4px}
+.rec{position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:6px;font:600 10.5px/1 var(--font-mono);letter-spacing:.12em;color:#fff}
+.rec::before{content:"";width:7px;height:7px;background:#FF5E7A;animation:blink 1.4s steps(2,start) infinite}
+.player-cap{position:absolute;right:12px;bottom:10px;font:600 10.5px/1 var(--font-mono);letter-spacing:.1em;color:rgba(255,255,255,.7)}
+.player-bar{height:4px;background:rgba(255,255,255,.12)}
+.player-bar i{display:block;height:100%;width:38%;background:var(--grad);animation:bar 7s linear infinite}
+@keyframes bar{from{width:4%}to{width:100%}}
+
+.bn-lock{display:inline-flex;align-items:center;gap:10px;height:28px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff;font:700 11px/1 var(--font-en);letter-spacing:.06em;text-transform:none}
+.bn-lock i{width:1px;height:10px;background:rgba(255,255,255,.35)}
+.bn-ask{margin-top:18px;font-size:13px;color:#8C90A0}
+
+/* 병원 유형별 혜택 (원본 표를 카드형으로) */
+.tier-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:clamp(56px,7vw,88px);padding-bottom:18px;border-bottom:1px solid var(--ink)}
+.tier-h{font-size:clamp(1.3rem,1.1rem + .8vw,1.75rem);font-weight:780;letter-spacing:-.035em;color:var(--ink)}
+.tier-hk{font:500 11.5px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.tbl{margin-top:16px}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);background:var(--white);overscroll-behavior-x:contain}
+.tbl table{width:100%;min-width:860px;border-collapse:separate;border-spacing:0;font-size:15px;line-height:1.55}
+.tbl thead{background-color:var(--indigo);background-image:var(--grad)}
+.tbl thead th{padding:20px 24px;text-align:left;font-size:14.5px;font-weight:700;color:#fff;letter-spacing:-.01em;white-space:nowrap;border-left:1px solid rgba(255,255,255,.18)}
+.tbl thead th:first-child{border-left:0;text-align:center;background:var(--violet)}
+.tbl tbody th,.tbl tbody td{padding:28px 24px;vertical-align:middle;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.tbl tbody tr:first-child th,.tbl tbody tr:first-child td{border-top:0}
+.tbl tbody th{width:172px;border-left:0;text-align:center;font-size:15.5px;font-weight:750;color:var(--ink);background:var(--mist);letter-spacing:-.02em}
+.tbl tbody tr{transition:background-color .3s}
+.tbl tbody tr:hover td{background:var(--paper)}
+.tbl .amt{width:170px;white-space:nowrap;font-size:15px;font-weight:700;color:var(--ink)}
+.tbl .amt b{font:800 1.9rem/1 var(--font-en);letter-spacing:-.04em;margin-right:2px}
+.tbl .is-hl .amt b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tbl .is-hl th{box-shadow:inset 3px 0 0 var(--violet)}
+.tl{display:grid;gap:8px}
+.tl li{position:relative;padding-left:15px;font-weight:600;color:var(--ink)}
+.tl li::before{content:"";position:absolute;left:0;top:.66em;width:5px;height:5px;background:var(--grad)}
+.tl li small{display:block;font-size:12.5px;font-weight:500;color:var(--muted)}
+.tl-sub li{font-weight:500;color:var(--text)}
+.tl-sub li::before{background:var(--faint)}
+.tbl .empty{text-align:center;color:var(--faint)}
+@media (min-width:901px){.tbl tbody td:nth-child(3) .tl li,.tbl tbody td:nth-child(4) .tl li{white-space:nowrap}}
+
+.cond{margin-top:16px;border:1px solid var(--line);background:var(--white)}
+.cond-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px clamp(20px,3vw,32px);background:var(--paper)}
+.cond-head h3{font-size:16px;font-weight:750;color:var(--ink);letter-spacing:-.02em}
+.cond-head p{font:500 11.5px/1 var(--font-mono);letter-spacing:.12em;color:var(--faint);text-transform:uppercase}
+.cond-row{display:grid;grid-template-columns:56px minmax(0,300px) minmax(0,1fr);align-items:center;gap:20px;padding:24px clamp(20px,3vw,32px);border-top:1px solid var(--line);transition:background-color .3s}
+.cond-row:first-of-type{border-top:0}
+.cond-row:hover{background:var(--paper)}
+.cond-no{font:600 13px/1 var(--font-mono);color:var(--indigo)}
+.cond-row h4{font-size:16.5px;font-weight:750;color:var(--ink);letter-spacing:-.02em}
+.cond-row p{font-size:16px;color:var(--text)}
+.cond-row p b{color:var(--ink);background:linear-gradient(transparent 62%,rgba(134,104,253,.22) 0)}
+.note{margin-top:20px;font-size:14.5px;color:var(--muted)}
+.note a{color:var(--indigo);font-weight:700;text-underline-offset:3px}
+
+/* =========================================================
+   FEATURES (BENTO)
+   ========================================================= */
+.bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.cell{position:relative;overflow:hidden;display:grid;grid-template-rows:auto 1fr;gap:28px;min-height:380px;padding:clamp(24px,2.6vw,34px);border:1px solid var(--line);background:var(--white);transition:border-color .4s,transform .5s var(--ease),box-shadow .5s var(--ease)}
+.cell:hover{border-color:var(--lav);transform:translateY(-4px);box-shadow:0 30px 60px -40px rgba(76,109,218,.5)}
+.cell-2{grid-column:span 2}
+.cell-top{display:grid;gap:14px;align-content:start}
+.cell-k{display:flex;align-items:center;gap:10px;font:500 12px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.cell-k b{color:var(--indigo);font-weight:600}
+.cell-t{font-size:clamp(1.15rem,1.02rem + .5vw,1.45rem);line-height:1.45;font-weight:700;letter-spacing:-.035em;color:var(--ink);text-wrap:balance}
+.cell-t strong{font-weight:800}
+.cell-t mark{background:linear-gradient(transparent 60%,rgba(134,104,253,.24) 0);color:inherit}
+.nw{white-space:nowrap}
+.cell-v{align-self:end}
+
+/* f1: 따로 접속 vs 한 곳에서 */
+.vm{display:grid;grid-template-columns:minmax(0,.8fr) auto minmax(0,1.2fr);align-items:center;gap:16px}
+.vm-col{display:grid;gap:8px}
+.vm-cap{font:600 11px/1 var(--font-mono);letter-spacing:.1em;color:var(--faint);margin-bottom:4px}
+.vm-cap.on{color:var(--indigo)}
+.vm-win{border:1px solid var(--line);background:var(--paper)}
+.vm-win.dim{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;font-size:13px;font-weight:650;color:var(--faint);border-style:dashed}
+.vm-win.dim::before{content:"";width:8px;height:8px;border:1px solid var(--line-2)}
+.vm-arrow{font:600 20px/1 var(--font-en);color:var(--violet)}
+.vm-win.on{background:var(--white);border-color:var(--lav);box-shadow:0 20px 40px -28px rgba(76,109,218,.6)}
+.vm-title{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:750;color:var(--ink);background:var(--paper)}
+.vm-title::before{content:"";width:8px;height:9px;background:var(--grad-v);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.vm-win.on ul{display:grid;gap:6px;padding:10px 12px 12px}
+.vm-win.on li{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px}
+.vm-win.on li i{height:6px;background:var(--line)}
+.vm-win.on li:nth-child(2) i{width:70%}
+.vm-win.on li:nth-child(3) i{width:84%}
+
+/* f2: 접수 확정 취소 */
+.vs{display:grid;gap:8px}
+.vs-cap{font:600 11px/1 var(--font-mono);letter-spacing:.1em;color:var(--faint);margin-bottom:4px}
+.vs-btn{display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 16px;border:1px solid var(--line);font-size:15px;font-weight:700;color:var(--ink);background:var(--white);animation:vsOn 6s var(--ease) infinite}
+.vs-btn span{font:600 11px/1 var(--font-mono);color:var(--faint);letter-spacing:.08em}
+.vs-btn:nth-child(3){animation-delay:2s}
+.vs-btn:nth-child(4){animation-delay:4s}
+@keyframes vsOn{
+  0%,4%{background:var(--white);border-color:var(--line);color:var(--ink)}
+  8%,30%{background:var(--ink);border-color:var(--ink);color:#fff}
+  36%,100%{background:var(--white);border-color:var(--line);color:var(--ink)}
+}
+
+/* f3: 시간대 변경 */
+.vt{position:relative;border:1px solid var(--line);background:var(--white)}
+.vt-row{display:grid;grid-template-columns:58px 1fr;height:42px;border-top:1px solid var(--line)}
+.vt-row:first-child{border-top:0}
+.vt-row span{display:grid;place-items:center;border-right:1px solid var(--line);font:600 11.5px/1 var(--font-en);color:var(--faint);background:var(--paper)}
+.vt-row i{background-image:linear-gradient(to bottom,transparent 50%,var(--line) 50%,var(--line) calc(50% + 1px),transparent calc(50% + 1px));opacity:.6}
+.vt-block{
+  position:absolute;left:66px;right:8px;top:45px;height:36px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px;
+  background:rgba(134,104,253,.1);border:1px solid var(--violet);box-shadow:inset 3px 0 0 var(--violet);
+  font-size:12.5px;font-weight:700;color:var(--ink);animation:move 6s var(--ease) infinite;
+}
+.vt-block em{font-style:normal;font:600 11px/1 var(--font-en);color:var(--violet-deep)}
+.vt-block em::before{content:"14:00"}
+@keyframes move{
+  0%,22%{transform:translateY(0)}
+  46%,86%{transform:translateY(63px)}
+  100%{transform:translateY(0)}
+}
+@keyframes lbl{0%,34%{content:"14:00"}35%,90%{content:"15:30"}91%,100%{content:"14:00"}}
+.vt-block em::before{animation:lbl 6s steps(1,end) infinite}
+
+/* f4: 광고 유입 예약 진료 흐름 (다크) */
+.cell-dark{background:var(--night);border-color:var(--night);color:#fff;isolation:isolate}
+.cell-dark:hover{border-color:#2B2F40}
+.cell-dark .cell-k{color:#8C90A0}
+.cell-dark .cell-k b{color:#B7A6FF}
+.cell-dark .cell-t{color:#fff}
+.cell-dark .cell-t mark{background:none;-webkit-background-clip:text;background-clip:text;color:transparent;background-image:linear-gradient(100deg,#B7A6FF,#8FC2FF)}
+.cell-dark::before{content:"";position:absolute;z-index:-1;width:560px;height:560px;right:-160px;top:-280px;background:radial-gradient(closest-side,rgba(134,104,253,.45),transparent);filter:blur(10px)}
+.vf{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.vf::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,rgba(134,104,253,.6),rgba(64,143,245,.6));z-index:0}
+.vf::after{content:"";position:absolute;top:calc(50% - 3px);left:0;width:60px;height:7px;background:linear-gradient(90deg,transparent,#fff,transparent);filter:blur(2px);animation:pulse 3.6s linear infinite;z-index:0}
+@keyframes pulse{from{left:-60px}to{left:100%}}
+.vf li{position:relative;z-index:1;display:grid;gap:10px;padding:16px 14px;border:1px solid var(--night-line);background:rgba(22,24,35,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.vf-no{font:500 11px/1 var(--font-mono);letter-spacing:.1em;color:#8C90A0}
+.vf li b{font-size:clamp(1.15rem,1rem + .6vw,1.45rem);font-weight:800;letter-spacing:-.03em}
+.vf li small{font-size:12.5px;font-weight:600;color:var(--night-text)}
+.vf li:last-child{border-color:transparent;background:linear-gradient(rgba(22,24,35,.92),rgba(22,24,35,.92)) padding-box,var(--grad) border-box}
+.vf-out{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:14px 16px;background:var(--grad);font-size:15px;font-weight:750;color:#fff}
+.vf-out span{font:700 18px/1 var(--font-en)}
+
+/* =========================================================
+   CLINICS
+   ========================================================= */
+.need{border-top:1px solid var(--ink)}
+.need li{position:relative;display:grid;grid-template-columns:80px minmax(0,1fr) auto;align-items:center;gap:20px;padding:clamp(22px,3vw,34px) 4px;border-bottom:1px solid var(--line);overflow:hidden}
+.need li::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--grad-soft,linear-gradient(102deg,rgba(134,104,253,.1),rgba(64,143,245,.1)));transform:scaleX(0);transform-origin:0 50%;transition:transform .7s var(--ease)}
+.need li:hover::before{transform:scaleX(1)}
+.need{position:relative;z-index:0}
+.need-no{font:600 clamp(1rem,.9rem + .4vw,1.25rem)/1 var(--font-en);color:var(--faint)}
+.need li p{font-size:clamp(1.25rem,1rem + 1.1vw,2rem);font-weight:750;letter-spacing:-.04em;color:var(--ink);line-height:1.35}
+.need-ic{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line-2);font:700 16px/1 var(--font-en);color:var(--violet);background:var(--white);transition:background-color .4s,color .4s,border-color .4s}
+.need li:hover .need-ic{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.quote{position:relative;margin-top:clamp(64px,9vw,120px);padding:clamp(28px,4vw,56px);border:1px solid var(--line);background:var(--paper);overflow:hidden}
+.quote::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--grad-v)}
+.quote-k{font:500 12px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:22px}
+.quote-t{font-size:clamp(1.45rem,1.05rem + 1.8vw,2.6rem);line-height:1.4;font-weight:750;letter-spacing:-.045em;color:var(--ink);text-wrap:balance}
+.quote em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* =========================================================
+   CLOSING
+   ========================================================= */
+.closing{--rail:var(--night-line);background-color:var(--night);color:#fff;border-top:0;overflow:hidden;isolation:isolate}
+.closing::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background-image:linear-gradient(to right,rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 0%,#000,transparent 75%);mask-image:radial-gradient(ellipse 70% 60% at 50% 0%,#000,transparent 75%);
+}
+.closing .aurora-a{right:auto;left:50%;margin-left:-380px;top:-420px;opacity:.9}
+.closing .aurora-b{right:-200px;top:auto;bottom:-360px;opacity:.7}
+@media (min-width:1320px){.closing>.wrap::before,.closing>.wrap::after{display:none}}
+.closing .label{color:#B7A6FF}
+.closing .label span{color:#6E7282}
+.closing-h{font-size:clamp(1.8rem,1.1rem + 2.8vw,3.5rem);line-height:1.28;font-weight:780;letter-spacing:-.045em;max-width:980px;text-wrap:balance}
+.closing-h em{font-style:normal;background:linear-gradient(100deg,#B7A6FF,#FFFFFF 50%,#8FC2FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.closing-sub{margin-top:22px;font-size:clamp(1.05rem,.98rem + .35vw,1.25rem);color:var(--night-text)}
+.contact{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:24px;margin-top:clamp(48px,6vw,80px);padding:clamp(22px,3vw,36px);border:1px solid var(--night-line);background:rgba(255,255,255,.03);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.contact-k{font:500 11.5px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:#8C90A0}
+.contact-t{margin-top:10px;font-size:clamp(1.05rem,.98rem + .35vw,1.25rem);font-weight:700;letter-spacing:-.02em}
+.contact-btns{display:flex;flex-wrap:wrap;gap:10px}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.foot{background:var(--night);color:#8C90A0;border-top:1px solid var(--night-line);padding-block:48px 40px;font-size:13.5px;line-height:1.8;overflow:hidden}
+.foot-top{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-bottom:24px;border-bottom:1px solid var(--night-line)}
+.foot .brand{color:#fff;margin:0}
+.foot-links{display:flex;gap:18px}
+.foot-links a{text-decoration:none;color:#B9BDC8}
+.foot-links a:hover{color:#fff}
+.foot-info{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:22px}
+.foot-info span{white-space:nowrap}
+.foot-copy{margin-top:14px;font:500 11.5px/1.6 var(--font-mono);letter-spacing:.06em;color:#6E7282}
+.foot-mark{margin-top:36px;font:800 clamp(3.2rem,.8rem + 11.5vw,11rem)/.8 var(--font-en);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px rgba(183,166,255,.28);white-space:nowrap;user-select:none}
+
+/* 모바일 하단 고정 CTA */
+.m-cta{display:none}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width:1180px){
+  .hero-grid{grid-template-columns:minmax(0,1fr);}
+  .hero-copy{max-width:760px}
+  .stage{max-width:680px;width:100%;margin-inline:auto}
+  .intro-grid{grid-template-columns:minmax(0,1fr)}
+  .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cell-2{grid-column:span 2}
+}
+@media (max-width:900px){
+  .gnb-nav{display:none}
+  .brand-sub{display:none}
+  .bn-grid{grid-template-columns:minmax(0,1fr)}
+  .bn{min-height:0}
+  /* 모바일: 표 행을 병원 유형별 카드로 전환 */
+  .tbl-scroll{overflow:visible;border:0;background:transparent}
+  .tbl table,.tbl tbody,.tbl tr,.tbl tbody th,.tbl tbody td{display:block;width:auto;min-width:0}
+  .tbl thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;background:none}
+  .tbl thead th{background:none}
+  .tbl tbody{display:grid;gap:12px}
+  .tbl tbody tr{position:relative;border:1px solid var(--line);background:var(--white);overflow:hidden}
+  .tbl tbody tr.is-hl{border-color:var(--violet)}
+  .tbl tbody tr.is-hl::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--grad)}
+  .tbl tbody th{padding:18px 18px 16px;text-align:left;font-size:16.5px;border:0;box-shadow:none}
+  .tbl tbody th br{display:none}
+  .tbl tbody td,.tbl tbody tr:first-child td{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:start;gap:10px;padding:16px 18px;border-left:0;border-top:1px solid var(--line)}
+  .tbl tbody td::before{content:attr(data-label);padding-top:2px;font-size:12.5px;font-weight:700;color:var(--faint);line-height:1.5}
+  .tbl tbody tr:hover td{background:transparent}
+  .tbl .amt{width:auto;align-items:center;white-space:normal}
+  .tbl .amt b{font-size:1.75rem}
+  .tbl .is-hl th{box-shadow:none}
+  .tbl .empty{text-align:left}
+  .tbl .tl{gap:6px}
+  .tbl .tl li{font-size:14.5px}
+  .cond-row{grid-template-columns:44px minmax(0,1fr);gap:6px 12px}
+  .cond-row p{grid-column:2}
+  .contact{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  :root{--header-h:58px}
+  body{font-size:16px}
+  .bento{grid-template-columns:minmax(0,1fr)}
+  .cell-2{grid-column:auto}
+  .cell{min-height:0}
+  .vm{grid-template-columns:minmax(0,1fr);gap:10px}
+  .vm-arrow{transform:rotate(90deg);justify-self:center}
+  .vf{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vf::before,.vf::after{display:none}
+  .need li{grid-template-columns:44px minmax(0,1fr);gap:12px}
+  .need-ic{display:none}
+  .hero-cta .btn{flex:1 1 auto}
+  .toast{right:8px;top:0;width:230px}
+  .stage{padding-top:84px}
+  .contact-btns .btn{flex:1 1 100%}
+  .foot-info span{white-space:normal}
+  .flow-chip{left:8px;bottom:0}
+  .mock-main{grid-template-columns:minmax(0,1fr)}
+  .mock-rail{display:none}
+  .stat{min-height:176px;padding:20px 18px}
+  .m-cta{
+    position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:55;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 16px;
+    background:rgba(19,20,25,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.1);color:#fff;font-size:13.5px;font-weight:600;
+    transform:translate3d(0,140%,0);opacity:0;visibility:hidden;
+    transition:transform .5s var(--ease),opacity .4s,visibility 0s linear .5s;
+  }
+  .m-cta.show{opacity:1;visibility:visible;transition:transform .5s var(--ease),opacity .4s,visibility 0s}
+  .m-cta b{background:linear-gradient(100deg,#B7A6FF,#8FC2FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .m-cta.show{transform:none}
+  .foot{padding-bottom:110px}
+}
+@media (max-width:480px){
+  .row{grid-template-columns:48px minmax(0,1fr) auto;gap:8px;padding:9px 10px}
+  .row .ch{display:none}
+  .mock-tabs span{padding:5px 7px;font-size:11px}
+  .mock-h{font-size:14.5px}
+  .stats{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .stat-v b{font-size:2.3rem}
+  .stat-v .ko{font-size:2.1rem}
+  .stat-d{font-size:13px}
+  .toast{width:208px;padding:12px 12px 10px}
+  .toast-a span{font-size:11px}
+  .eyebrow{font-size:12.5px}
+}
+
+/* 모션 최소화 설정 존중 */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .js .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"><span></span></div>
+
+<!-- ============ HEADER ============ -->
+<header class="gnb" id="top">
+  <div class="gnb-in">
+    <a class="brand" href="#top" aria-label="MOTION E 모션차트 × 여신티켓, 맨 위로">
+      <span class="hex" aria-hidden="true">E</span>
+      <span class="brand-word">MOTION E</span>
+      <span class="brand-sub">모션차트 <i>×</i> 여신티켓</span>
+    </a>
+    <nav class="gnb-nav" aria-label="주요 메뉴">
+      <a href="#benefits">혜택</a>
+      <a href="#features">연동 기능</a>
+      <a href="#clinics">추천 병원</a>
+    </nav>
+    <a class="btn btn-sm btn-ink" href="https://www.motionecosystem.com/board/inquiry" target="_blank" rel="noopener">연동 문의<span class="arr" aria-hidden="true">→</span></a>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" aria-labelledby="hero-title">
+  <span class="aurora aurora-a" aria-hidden="true"></span>
+  <span class="aurora aurora-b" aria-hidden="true"></span>
+  <div class="wrap hero-grid">
+
+    <div class="hero-copy">
+      <p class="eyebrow rv"><b>NEW</b>모션차트, 여신티켓 연동 서비스 출시</p>
+      <h1 class="h1" id="hero-title">
+        <span class="h1-q rv" style="--d:.06s">지금 모션차트에서 여신티켓 연동하면?</span>
+        <span class="h1-main rv" style="--d:.12s">최대 <span class="grad-text"><span class="num" data-count="360">360</span>만 원</span> 광고비, 무료로 지원해 드려요!</span>
+      </h1>
+      <p class="lead rv" style="--d:.2s">여신티켓 광고를 통해 환자 유입은 늘리고, 모션차트로 예약관리는 더 쉽게 할 수 있는 기회, 지금 바로 확인해볼까요?</p>
+      <div class="hero-cta rv" style="--d:.28s">
+        <a class="btn btn-grad" href="#contact">연동 신청 문의하기<span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn-line" href="#benefits">혜택 자세히 보기</a>
+      </div>
+      <ul class="hero-points rv" style="--d:.36s">
+        <li>여신티켓 광고비 최대 360만 원 무료 지원</li>
+        <li>병원 전용 홍보 영상 무료 제작</li>
+      </ul>
+    </div>
+
+    <div class="stage rv" style="--d:.2s">
+      <div class="mock" role="img" aria-label="모션차트 예약 관리 화면 예시: 여신티켓 예약을 모션차트 한 화면에서 접수, 확정, 취소, 시간 변경">
+        <div class="mock-bar">
+          <span class="mock-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="mock-title">모션차트 · 예약 관리</span>
+          <span class="mock-live"><em></em>LIVE</span>
+        </div>
+        <div class="mock-main">
+          <div class="mock-rail" aria-hidden="true">
+            <span>대시보드</span>
+            <span class="on">예약</span>
+            <span>차트</span>
+            <span>티케팅</span>
+          </div>
+          <div class="mock-body">
+            <div class="mock-head">
+              <div>
+                <p class="mock-date">TODAY</p>
+                <p class="mock-h">오늘 예약 환자</p>
+              </div>
+              <div class="mock-tabs" aria-hidden="true"><span class="on">전체</span><span>여신티켓</span><span>모션차트</span></div>
+            </div>
+            <ul class="mock-list">
+              <li class="row">
+                <time>10:30</time>
+                <span class="who"><b>김*연</b><small>피부 상담</small></span>
+                <em class="ch ch-ys">여신티켓</em>
+                <span class="st st-ok">확정</span>
+              </li>
+              <li class="row">
+                <time>11:00</time>
+                <span class="who"><b>이*진</b><small>리프팅 상담</small></span>
+                <em class="ch ch-mc">모션차트</em>
+                <span class="st st-ok">확정</span>
+              </li>
+              <li class="row is-new">
+                <time>13:30</time>
+                <span class="who"><b>박*은</b><small>신규 · 여신티켓 예약</small></span>
+                <em class="ch ch-ys">여신티켓</em>
+                <span class="st-swap"><span class="st st-wait">접수</span><span class="st st-ok">확정</span></span>
+              </li>
+              <li class="row">
+                <time><s>14:00</s>15:30</time>
+                <span class="who"><b>최*아</b><small>레이저 상담</small></span>
+                <em class="ch ch-ys">여신티켓</em>
+                <span class="st st-move">시간 변경</span>
+              </li>
+              <li class="row">
+                <time>16:00</time>
+                <span class="who"><b>정*희</b><small>필러 상담</small></span>
+                <em class="ch ch-ys">여신티켓</em>
+                <span class="st st-cancel">취소</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast" aria-hidden="true">
+        <p class="toast-k"><i></i>여신티켓 신규 예약</p>
+        <p class="toast-t">박*은 님 · 오늘 13:30</p>
+        <p class="toast-d">모션차트에서 바로 처리하세요</p>
+        <div class="toast-a"><span class="ok">확정</span><span>취소</span><span>시간 변경</span></div>
+      </div>
+      <div class="flow-chip" aria-hidden="true">광고 <i>→</i> 유입 <i>→</i> 예약 <i>→</i> 진료</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ TICKER ============ -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <ul class="ticker-list">
+      <li>여신티켓 x 모션차트 연동 기념</li>
+      <li>광고비 최대 360만 원 무료 지원</li>
+      <li>병원 전용 홍보 영상 무료 제작</li>
+      <li>예약 접수 · 확정 · 취소</li>
+      <li>예약 시간대 변경</li>
+      <li>한 곳에서 통합 관리</li>
+      <li>광고 · 유입 · 예약 · 진료</li>
+    </ul>
+    <ul class="ticker-list">
+      <li>여신티켓 x 모션차트 연동 기념</li>
+      <li>광고비 최대 360만 원 무료 지원</li>
+      <li>병원 전용 홍보 영상 무료 제작</li>
+      <li>예약 접수 · 확정 · 취소</li>
+      <li>예약 시간대 변경</li>
+      <li>한 곳에서 통합 관리</li>
+      <li>광고 · 유입 · 예약 · 진료</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ INTRO ============ -->
+<section class="sec intro" id="intro" aria-labelledby="intro-title">
+  <div class="wrap intro-grid">
+    <div>
+      <p class="label rv"><span>01</span>Hello</p>
+      <h2 class="hello rv" id="intro-title">안녕하세요, 원장님!</h2>
+      <p class="hello-sub rv">미용·성형 병원에 특화된 EMR 차트, <em class="grad-text">모션차트</em>입니다.</p>
+      <div class="intro-copy">
+        <p class="rv">모션차트가 <strong>550만 다운로드를 돌파한 국내 대표 의료 광고 플랫폼, ‘여신티켓’</strong>과 예약 연동 기능을 새롭게 지원합니다. 여신티켓은 3040 젊은 여성층 중심의 강력한 유입력과 검증된 전환 성과를 기반으로, 수많은 병원들이 여신티켓을 통해 실질적인 신규 환자 유입 효과를 얻고 있는데요.</p>
+        <p class="rv">이번 모션차트와 여신티켓 예약 연동 출시를 기념해, 원장님들께 <strong>광고비 최대 360만 원을 무료로 지원</strong>해드려요!</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat rv">
+        <p class="stat-k">여신티켓</p>
+        <p class="stat-v"><b class="en" data-count="550">550</b><span>만</span></p>
+        <p class="stat-d">다운로드 돌파,<br>국내 대표 의료 광고 플랫폼</p>
+      </div>
+      <div class="stat rv" style="--d:.08s">
+        <p class="stat-k">여신티켓</p>
+        <p class="stat-v"><b class="en">3040</b></p>
+        <p class="stat-d">젊은 여성층 중심의<br>강력한 유입력</p>
+      </div>
+      <div class="stat stat-grad rv" style="--d:.16s">
+        <p class="stat-k">연동 출시 기념</p>
+        <p class="stat-v"><small>최대</small><b class="en" data-count="360">360</b><span>만 원</span></p>
+        <p class="stat-d">여신티켓 광고비<br>무료 지원</p>
+      </div>
+      <div class="stat rv" style="--d:.24s">
+        <p class="stat-k">연동 출시 기념</p>
+        <p class="stat-v"><b class="ko">무료</b></p>
+        <p class="stat-d">병원 전용<br>홍보 영상 제작</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENEFITS ============ -->
+<section class="sec benefits" id="benefits" aria-labelledby="benefits-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="label rv"><span>02</span>Benefits</p>
+      <h2 class="h2 rv" id="benefits-title">모션차트 내 여신티켓 예약 연동 시 제공 혜택</h2>
+    </div>
+
+    <div class="bn-grid">
+      <article class="bn bn-1 rv">
+        <p class="bn-k"><span>Benefit 01</span><span class="bn-lock">MOTION E<i></i>여신티켓</span></p>
+        <div>
+          <h3 class="bn-t">여신티켓 광고비</h3>
+          <p class="bn-big"><small>최대</small><b data-count="360">360</b><span>만 원</span></p>
+          <p class="bn-tag">무료 지원</p>
+          <p class="bn-ask">*참여 문의 : 모션차트 고객센터</p>
+        </div>
+      </article>
+
+      <article class="bn bn-2 rv" style="--d:.1s">
+        <p class="bn-k"><span>Benefit 02</span><span>Promo video</span></p>
+        <div class="player" aria-hidden="true">
+          <div class="player-scr">
+            <span class="rec">REC</span>
+            <span class="play">▶</span>
+            <span class="player-cap">HOSPITAL ONLY</span>
+          </div>
+          <div class="player-bar"><i></i></div>
+        </div>
+        <div>
+          <h3 class="bn-t">병원 전용 홍보 영상</h3>
+          <p class="bn-big"><span class="ko">무료 제작</span></p>
+        </div>
+      </article>
+    </div>
+
+    <div class="tier-head rv">
+      <h3 class="tier-h">병원 유형별 혜택</h3>
+      <p class="tier-hk">By hospital type</p>
+    </div>
+    <div class="tbl rv">
+      <div class="tbl-scroll" role="region" aria-label="병원 유형별 연동 혜택 표">
+        <table>
+          <caption class="sr">연동 혜택 제공 혜택</caption>
+          <thead>
+            <tr>
+              <th scope="col">병원 유형</th>
+              <th scope="col">지원 금액</th>
+              <th scope="col">무료 혜택 항목</th>
+              <th scope="col">주요 조건</th>
+              <th scope="col">비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="is-hl">
+              <th scope="row">여신티켓 <br>신규 입점 병원</th>
+              <td class="amt" data-label="지원 금액"><span class="amt-v"><b data-count="360">360</b>만 원 상당</span></td>
+              <td data-label="무료 혜택 항목">
+                <ul class="tl">
+                  <li>무료 광고 체험<small>(유료 전환 충족 전까지)</small></li>
+                  <li>모바일 예약 포인트 50만 포인트</li>
+                  <li>110만 원 상당 부가광고 상품</li>
+                </ul>
+              </td>
+              <td data-label="주요 조건">
+                <ul class="tl tl-sub">
+                  <li>여신티켓 광고 미사용</li>
+                  <li>모바일 예약 연동 미사용</li>
+                </ul>
+              </td>
+              <td data-label="비고">
+                <ul class="tl tl-sub">
+                  <li>결제 금액 200만 원 or 전환 건수 30건 달성 시 유료 전환</li>
+                  <li>달성 전까지 무료 광고 유지</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">여신티켓 <br>기 사용 병원</th>
+              <td class="amt" data-label="지원 금액"><span class="amt-v"><b data-count="160">160</b>만 원 상당</span></td>
+              <td data-label="무료 혜택 항목">
+                <ul class="tl">
+                  <li>모바일 예약 포인트 50만 포인트</li>
+                  <li>110만 원 상당 부가광고 상품</li>
+                </ul>
+              </td>
+              <td data-label="주요 조건">
+                <ul class="tl tl-sub">
+                  <li>여신티켓 광고 진행중</li>
+                  <li>모바일 예약 연동 미사용</li>
+                </ul>
+              </td>
+              <td data-label="비고">
+                <ul class="tl tl-sub">
+                  <li>포인트 지급 조건<br>: 모바일 예약 연동 시</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">기 사용 <br>+모바일 예약 <br>사용 병원</th>
+              <td class="amt" data-label="지원 금액"><span class="amt-v"><b data-count="110">110</b>만 원 상당</span></td>
+              <td data-label="무료 혜택 항목">
+                <ul class="tl">
+                  <li>110만 원 상당 부가광고 상품</li>
+                </ul>
+              </td>
+              <td data-label="주요 조건">
+                <ul class="tl tl-sub">
+                  <li>여신티켓 광고 진행중</li>
+                  <li>모바일 예약 연동 사용중</li>
+                </ul>
+              </td>
+              <td class="empty" data-label="비고">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cond rv">
+      <div class="cond-head">
+        <h3>혜택 적용 조건</h3>
+        <p>Conditions</p>
+      </div>
+      <div class="cond-row">
+        <span class="cond-no">A</span>
+        <h4>무료 광고 체험 조건</h4>
+        <p>결제 금액 <b>200만 원</b> or 전환 건수 <b>30건</b> 달성 시 유료 전환<br>달성 전까지 무료 광고 유지</p>
+      </div>
+      <div class="cond-row">
+        <span class="cond-no">B</span>
+        <h4>모바일 예약 포인트 지급 조건</h4>
+        <p>최소 충전금 <b>100만 원(VAT 별도)</b> 입금 시 제공</p>
+      </div>
+      <div class="cond-row">
+        <span class="cond-no">C</span>
+        <h4>부가광고 상품 조건</h4>
+        <p>앱 내 <b>푸시 또는 팝업 1회</b> 발송</p>
+      </div>
+    </div>
+    <p class="note rv">* 연동 신청 및 자세한 내용은 <a href="#contact">모션차트 고객센터</a>로 문의해주세요.</p>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="sec features" id="features" aria-labelledby="features-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="label rv"><span>03</span>Features</p>
+      <h2 class="h2 rv" id="features-title">모션차트에서 여신티켓 연동하면<br>어떤 점이 편리한가요?</h2>
+    </div>
+
+    <div class="bento">
+      <!-- 01 통합 관리 -->
+      <article class="cell cell-2 rv">
+        <div class="cell-top">
+          <p class="cell-k"><b>01</b>통합 관리</p>
+          <h3 class="cell-t">여신티켓에 따로 접속할 필요 없이, <mark><strong>한 곳에서 통합 관리</strong></mark>할 수 있어요.</h3>
+        </div>
+        <div class="cell-v vm" aria-hidden="true">
+          <div class="vm-col">
+            <p class="vm-cap">따로 접속</p>
+            <div class="vm-win dim">모션차트</div>
+            <div class="vm-win dim">여신티켓</div>
+          </div>
+          <div class="vm-arrow">→</div>
+          <div class="vm-col">
+            <p class="vm-cap on">한 곳에서 통합 관리</p>
+            <div class="vm-win on">
+              <div class="vm-title">모션차트</div>
+              <ul>
+                <li><em class="ch ch-ys">여신티켓</em><i></i></li>
+                <li><em class="ch ch-mc">모션차트</em><i></i></li>
+                <li><em class="ch ch-ys">여신티켓</em><i></i></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 접수 확정 취소 -->
+      <article class="cell rv" style="--d:.08s">
+        <div class="cell-top">
+          <p class="cell-k"><b>02</b>예약 처리</p>
+          <h3 class="cell-t">모션차트 예약 페이지에서 직접 <mark class="nw">예약 접수·확정·취소</mark>가 가능해져요.</h3>
+        </div>
+        <div class="cell-v vs" aria-hidden="true">
+          <p class="vs-cap">모션차트 예약 페이지</p>
+          <div class="vs-btn">예약 접수<span>01</span></div>
+          <div class="vs-btn">예약 확정<span>02</span></div>
+          <div class="vs-btn">예약 취소<span>03</span></div>
+        </div>
+      </article>
+
+      <!-- 03 시간대 변경 -->
+      <article class="cell rv">
+        <div class="cell-top">
+          <p class="cell-k"><b>03</b>시간대 변경</p>
+          <h3 class="cell-t">여신티켓 환자의 <mark>예약 시간대 변경</mark>까지 한 차트 내에서 진행할 수 있어요.</h3>
+        </div>
+        <div class="cell-v vt" aria-hidden="true">
+          <div class="vt-row"><span>13:00</span><i></i></div>
+          <div class="vt-row"><span>14:00</span><i></i></div>
+          <div class="vt-row"><span>15:00</span><i></i></div>
+          <div class="vt-row"><span>16:00</span><i></i></div>
+          <div class="vt-block">최*아 · 여신티켓 <em></em></div>
+        </div>
+      </article>
+
+      <!-- 04 흐름 -->
+      <article class="cell cell-2 cell-dark rv" style="--d:.08s">
+        <div class="cell-top">
+          <p class="cell-k"><b>04</b>매출 증대</p>
+          <h3 class="cell-t">광고-유입-예약-진료 흐름이 원활해져 <mark>병원 매출이 증대해요.</mark></h3>
+        </div>
+        <div class="cell-v">
+          <ol class="vf" aria-label="광고, 유입, 예약, 진료 흐름">
+            <li><span class="vf-no">01</span><b>광고</b><small>여신티켓</small></li>
+            <li><span class="vf-no">02</span><b>유입</b><small>신규 환자</small></li>
+            <li><span class="vf-no">03</span><b>예약</b><small>모션차트</small></li>
+            <li><span class="vf-no">04</span><b>진료</b><small>모션차트</small></li>
+          </ol>
+          <p class="vf-out">병원 매출 증대 <span aria-hidden="true">↗</span></p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLINICS ============ -->
+<section class="sec clinics" id="clinics" aria-labelledby="clinics-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="label rv"><span>04</span>For Clinics</p>
+      <h2 class="h2 rv" id="clinics-title">이런 고민을 가진 병원에 추천해요!</h2>
+    </div>
+
+    <ol class="need">
+      <li class="rv"><span class="need-no">01</span><p>광고비 부담으로 여신티켓을 도입하지 못했던 병원</p><span class="need-ic" aria-hidden="true">✓</span></li>
+      <li class="rv" style="--d:.06s"><span class="need-no">02</span><p>외부 예약 환자 관리 효율을 높이고 싶은 병원</p><span class="need-ic" aria-hidden="true">✓</span></li>
+      <li class="rv" style="--d:.12s"><span class="need-no">03</span><p>여신티켓을 이미 활용 중인 병원</p><span class="need-ic" aria-hidden="true">✓</span></li>
+    </ol>
+
+    <blockquote class="quote rv">
+      <p class="quote-k">One screen</p>
+      <p class="quote-t">기존 타 CRM 및 EMR 차트사와 달리, 모션차트는 <em>한 화면에서 모든 예약 환자를</em> 간편하게 관리할 수 있어요.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============ CLOSING / CONTACT ============ -->
+<section class="sec closing" id="contact" aria-labelledby="contact-title">
+  <span class="aurora aurora-a" aria-hidden="true"></span>
+  <span class="aurora aurora-b" aria-hidden="true"></span>
+  <div class="wrap">
+    <p class="label rv"><span>05</span>Contact</p>
+    <h2 class="closing-h rv" id="contact-title"><em>모션차트</em>를 사용하는 원장님들께서 더 나은 진료 환경을 맞이하실 수 있도록 노력하겠습니다.</h2>
+    <p class="closing-sub rv">다음 업데이트도 기대해주세요! 감사합니다.</p>
+
+    <div class="contact rv">
+      <div>
+        <p class="contact-k">Apply for integration</p>
+        <p class="contact-t">연동 신청 및 자세한 내용은 모션차트 고객센터로 문의해주세요.</p>
+      </div>
+      <div class="contact-btns">
+        <a class="btn btn-grad" href="tel:02-6953-8898">전화 문의 02-6953-8898<span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn-line-light" href="mailto:help@triupcorp.com?subject=%5B%EC%97%AC%EC%8B%A0%ED%8B%B0%EC%BC%93%20%EC%97%B0%EB%8F%99%20%EC%8B%A0%EC%B2%AD%5D%20%EB%AC%B8%EC%9D%98">help@triupcorp.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="brand" href="#top" aria-label="맨 위로">
+        <span class="hex" aria-hidden="true">E</span>
+        <span class="brand-text"><span class="brand-word">MOTION E</span><span class="brand-tag">EMR · OCS CHART SYSTEM</span></span>
+      </a>
+      <nav class="foot-links" aria-label="모션 공식 사이트">
+        <a href="https://www.motionecosystem.com/business/motionE" target="_blank" rel="noopener">모션 공식 홈페이지</a>
+      </nav>
+    </div>
+    <p class="foot-info">
+      <span>주식회사 트라이업</span>
+      <span>대표 : 김은희</span>
+      <span>주소 : 서울특별시 강남구 학동로45길 3, 4층 (논현동, 성우빌딩)</span>
+      <span>사업자등록번호 : 458-87-02038</span>
+      <span>대표전화 : 02-6953-8898</span>
+      <span>이메일 : help@triupcorp.com</span>
+      <span>통신판매업신고번호 : 2022-서울강남-03400</span>
+    </p>
+    <p class="foot-copy">COPYRIGHT © 2026 TRIUP. ALL RIGHTS RESERVED.</p>
+    <p class="foot-mark" aria-hidden="true">MOTION E</p>
+  </div>
+</footer>
+
+<!-- 모바일 하단 고정 CTA -->
+<div class="m-cta">
+  <p><b>최대 360만 원</b> 광고비 무료 지원</p>
+  <a class="btn btn-sm btn-grad" href="https://www.motionecosystem.com/board/inquiry" target="_blank" rel="noopener">연동 문의<span class="arr" aria-hidden="true">→</span></a>
+</div>
+
+<script>
+(() => {
+  const d = document, root = d.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasIO = 'IntersectionObserver' in window;
+
+  /* 스크롤 진행바 + 헤더 상태 */
+  const bar = d.querySelector('.progress span');
+  const gnb = d.querySelector('.gnb');
+  let ticking = false;
+  const onScroll = () => {
+    const max = root.scrollHeight - innerHeight;
+    bar.style.transform = 'scaleX(' + (max > 0 ? scrollY / max : 0) + ')';
+    gnb.classList.toggle('is-scrolled', scrollY > 8);
+    ticking = false;
+  };
+  addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(onScroll); ticking = true; } }, { passive: true });
+  onScroll();
+
+  /* 스크롤 리빌 */
+  const rv = d.querySelectorAll('.rv');
+  if (hasIO && !reduce) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -8% 0px', threshold: .1 });
+    rv.forEach(el => io.observe(el));
+  } else {
+    rv.forEach(el => el.classList.add('in'));
+  }
+
+  /* 숫자 카운트업 */
+  const counters = d.querySelectorAll('[data-count]');
+  if (hasIO && !reduce) {
+    const run = el => {
+      const to = +el.dataset.count, t0 = performance.now(), dur = 1500;
+      const step = t => {
+        const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 4);
+        el.textContent = Math.round(to * e).toLocaleString('ko-KR');
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    const io2 = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { run(e.target); io2.unobserve(e.target); }
+    }), { threshold: .5 });
+    counters.forEach(c => { c.textContent = '0'; io2.observe(c); });
+  }
+
+  /* 모바일 하단 CTA: 히어로와 문의 영역이 안 보일 때만 노출 */
+  const mcta = d.querySelector('.m-cta');
+  const hero = d.querySelector('.hero');
+  const contact = d.getElementById('contact');
+  if (mcta && hasIO) {
+    const vis = new Map();
+    const upd = () => mcta.classList.toggle('show', ![...vis.values()].some(Boolean));
+    const io3 = new IntersectionObserver(es => { es.forEach(e => vis.set(e.target, e.isIntersecting)); upd(); });
+    [hero, contact, d.querySelector('.foot')].forEach(el => { if (el) { vis.set(el, false); io3.observe(el); } });
+  }
+})();
+</script>
+</body>
+</html>
