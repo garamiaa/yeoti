@@ -539,7 +539,10 @@ b,strong{font-weight:700}
 .quote{position:relative;margin-top:clamp(64px,9vw,120px);padding:clamp(28px,4vw,56px);border:1px solid var(--line);background:var(--paper);overflow:hidden}
 .quote::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--grad-v)}
 .quote-k{font:500 12px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:22px}
-.quote-t{font-size:clamp(1.45rem,1.05rem + 1.8vw,2.6rem);line-height:1.4;font-weight:750;letter-spacing:-.045em;color:var(--ink);text-wrap:balance}
+.quote-t{font-size:clamp(1.35rem,1rem + 1.6vw,2.3rem);line-height:1.4;font-weight:750;letter-spacing:-.045em;color:var(--ink);text-wrap:balance}
+/* 첫 구절은 한 줄로 떼고, "한 화면에서"처럼 붙어 읽혀야 하는 말은 줄이 갈리지 않게 */
+.quote-l{display:block}
+.quote .nb{white-space:nowrap}
 .quote em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 /* =========================================================
@@ -1100,7 +1103,7 @@ b,strong{font-weight:700}
 
     <blockquote class="quote rv">
       <p class="quote-k">One screen</p>
-      <p class="quote-t">기존 타 CRM 및 EMR 차트사와 달리, 모션차트는 <em>한 화면에서 모든 예약 환자를</em> 간편하게 관리할 수 있어요.</p>
+      <p class="quote-t"><span class="quote-l">기존 타 CRM 및 EMR 차트사와 달리,</span> 모션차트는 <em><span class="nb">한 화면에서</span> <span class="nb">모든 예약 환자를</span></em> 간편하게 관리할 수 있어요.</p>
     </blockquote>
   </div>
 </section>
